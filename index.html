@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Save8 · My cards sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=League+Spartan:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0E0F0C; --muted:#6B6B66; --line:#E6E3DB; --page:#F7F4ED; --orange:#E6651A;
+  --soft:#D9E8FA; --softInk:#0F2D6F; --blue:#2E5CC8; --link:#000B80; --red:#C8102E;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#2b2b2b;font-family:Inter,system-ui,sans-serif;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:40px;min-height:100vh;padding:20px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit;border:0;outline:0;background:none}
+
+/* phone */
+.phone{position:relative;width:402px;height:874px;border-radius:44px;overflow:hidden;background:#fff;flex:none;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.home{position:absolute;inset:0;overflow:hidden}
+.home img{display:block;width:402px;height:932px}
+.hotspot{position:absolute;left:224px;top:60px;width:116px;height:44px;border-radius:12px}
+.status{opacity:0;transition:opacity .25s;position:absolute;left:0;right:0;top:0;height:54px;z-index:30;pointer-events:none}
+.status .t{position:absolute;left:32px;top:17px;font-weight:600;font-size:17px}
+.status .island{position:absolute;left:139px;top:11px;width:124px;height:36px;border-radius:20px;background:#000}
+.status .ic{position:absolute;right:26px;top:19px;display:flex;gap:6px;align-items:center}
+.status.on{opacity:1}
+.scrim{position:absolute;inset:0;background:rgba(14,15,12,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:10}
+.scrim.on{opacity:1;pointer-events:auto}
+
+/* sheet */
+.sheet{position:absolute;left:0;right:0;top:65px;height:809px;background:var(--page);border-radius:24px 24px 0 0;z-index:20;transform:translateY(110%);transition:transform .32s cubic-bezier(.2,.8,.2,1);overflow:hidden;display:flex;flex-direction:column}
+.sheet.on{transform:none}
+.handle{position:absolute;left:50%;top:7px;width:36px;height:4px;border-radius:2px;background:#8c8a84;transform:translateX(-50%);z-index:3}
+.close{position:absolute;right:12px;top:20px;width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;z-index:40;transform:scale(0);transition:transform .25s}
+.close.on{transform:scale(1)}
+.hd{flex:none;display:flex;align-items:flex-start;gap:8px;padding:31px 16px 0 16px;height:63px}
+.hd .back{width:32px;height:32px;display:grid;place-items:center}
+.hd h1{font-family:'League Spartan',sans-serif;font-weight:600;font-size:24.5px;line-height:30px;letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
+.hd h1 img{width:32px;height:32px;object-fit:contain}
+.hd.plain{padding-left:16px}
+.body{flex:1;overflow-y:auto;padding:0 16px 24px;scrollbar-width:none;position:relative}
+.body::-webkit-scrollbar{display:none}
+.search{display:flex;align-items:center;gap:10px;height:48px;background:#fff;border-radius:14px;padding:0 14px;margin-top:20px;box-shadow:0 1px 3px rgba(14,15,12,.05);border:1.5px solid transparent;flex:none}
+.search input{flex:1;font-size:15px;min-width:0}
+.search input::placeholder{color:#7b7a75}
+.search.focus{border-color:#1F3FA3}
+.search input{caret-color:#1F3FA3}
+.search .clr{width:20px;height:20px;border-radius:50%;background:#C9C8C3;display:none;place-items:center}
+.search.has .clr{display:grid}
+.sec{font-weight:600;font-size:17px;line-height:24px;margin:20px 0 10px}
+.meta{font-size:12px;color:var(--muted);margin:14px 2px 8px}
+.card{background:#fff;border-radius:20px;padding:0 17px;box-shadow:0 1px 3px rgba(14,15,12,.04)}
+.row{display:flex;align-items:center;gap:14px;padding:11.5px 0;position:relative}
+.row+.row::before{content:'';position:absolute;top:0;left:64px;right:0;height:1px;background:var(--line)}
+.art{width:52px;height:33px;border-radius:4px;object-fit:cover;box-shadow:0 1px 4px rgba(0,0,0,.25);flex:none}
+.row .tx{flex:1;min-width:0}
+.row .nm{font-weight:600;font-size:14px;line-height:20px}
+.row .bk{font-size:12px;line-height:16px;color:var(--muted)}
+.btn-add{height:36px;padding:0 13px;border-radius:18px;background:var(--soft);color:var(--softInk);font-weight:600;font-size:14px}
+.added{display:flex;align-items:center;gap:10px}
+.added .ok{display:flex;align-items:center;gap:6px;color:var(--blue);font-weight:600;font-size:14px}
+.added .x{width:30px;height:30px;border-radius:50%;background:#EDEBE5;display:grid;place-items:center}
+.more{width:28px;height:28px;border-radius:50%;background:#F0EEE8;display:grid;place-items:center;flex:none}
+.more.on{background:#DEDBD3}
+.link{display:block;margin:23px auto 0;font-weight:600;font-size:14px;color:var(--link);text-decoration:underline;text-underline-offset:3px;text-align:center}
+
+/* bank grid */
+.grid{display:grid;grid-template-columns:repeat(4,88px);row-gap:16px;padding:17px 9px;background:#fff;border-radius:20px}
+.tile{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px;font-weight:500;text-align:center;line-height:16px;padding:0;width:88px;align-self:start}
+.tile .lg{width:40px;height:40px;display:grid;place-items:center}
+.tile .lg img{width:36px;height:36px;object-fit:contain}
+.tile span{width:80px;display:block}
+
+/* bank list */
+.brow{display:flex;align-items:center;gap:12px;padding:10.5px 0;width:100%;text-align:left;position:relative}
+.brow+.brow::before{content:'';position:absolute;top:0;left:52px;right:0;height:1px;background:var(--line)}
+.tight .row{padding:10px 0}
+.blg{width:40px;height:40px;border-radius:10px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;flex:none;overflow:hidden}
+.blg img{width:32px;height:32px;object-fit:contain}
+.blg.l{background:#EDEBE5;border-color:transparent;font-weight:600;font-size:14px;color:#4b4a46}
+.brow b{flex:1;font-weight:600;font-size:14px}
+
+/* swipe */
+.swipe{position:relative;overflow:hidden}
+.swipe .rm{position:absolute;right:0;top:0;bottom:0;width:72px;background:#FBE4E4;color:var(--red);display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+.swipe .in{position:relative;background:#fff;display:flex;align-items:center;gap:14px;padding:11.5px 0;transition:transform .2s;touch-action:pan-y}
+.swipe+.swipe::before{content:'';position:absolute;top:0;left:64px;right:0;height:1px;background:var(--line);z-index:2}
+.swipe{position:relative}
+
+/* popover */
+.pop{position:absolute;right:17px;width:202px;height:56px;background:#fff;border-radius:14px;box-shadow:0 8px 24px rgba(14,15,12,.16);display:flex;align-items:center;gap:12px;padding:0 20px;color:var(--red);font-weight:600;font-size:15px;z-index:5}
+
+/* states */
+.center{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:40px}
+.center.mid{padding-top:319px}
+.ico{width:56px;height:56px;margin-bottom:16px;display:block}
+.center h2{font-weight:600;font-size:18px;line-height:24px}
+.center p{font-size:14px;line-height:20px;color:#6B6B66;margin-top:4px}
+.pill{margin-top:16px;height:44px;min-width:144px;padding:0 21px;border-radius:22px;background:#fff;border:1px solid rgba(14,15,12,.12);font-weight:600;font-size:14px}
+.center.empty{padding-top:150px}
+.empty h2{font-family:'League Spartan',sans-serif;font-size:26px;line-height:32px;font-weight:600;margin-top:28px}
+.empty p{font-size:15px;line-height:22px;margin-top:8px;color:#454745}
+.hero{position:relative;width:260px;height:196px}
+.hero .bd{position:absolute;left:36px;top:4px;width:188px;height:188px}
+.hero .c{position:absolute;border-radius:8px;overflow:hidden;box-shadow:0 8px 18px rgba(13,15,13,.18)}
+.hero .c img{display:block;width:100%;height:100%;object-fit:cover}
+.fld{margin-top:16px}
+.sub+.fld{margin-top:23px}
+.fld label{display:block;font-size:12px;line-height:16px;color:var(--muted);margin:0 0 8px}
+.fld .in{height:48px;background:#fff;border-radius:14px;padding:0 16px;display:flex;align-items:center;border:1.5px solid transparent}
+.fld .in.focus{border-color:#1F2A7A}
+.fld input{width:100%;font-size:15px;caret-color:var(--orange)}
+.sub{font-size:13px;line-height:16px;color:var(--muted);margin:22px 0 0}
+
+/* footer + toast */
+.foot{flex:none;background:#fff;border-top:1px solid var(--line);padding:12px 16px 0;height:99px}
+.cta{width:100%;height:52px;border-radius:14px;background:var(--orange);color:#fff;font-weight:600;font-size:16px}
+.cta:disabled{opacity:.45;cursor:default}
+.toast{position:absolute;left:16px;right:16px;height:48px;border-radius:14px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-weight:500;font-size:14px;z-index:6;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
+.toast.on{opacity:1;transform:none;pointer-events:auto}
+.toast button{color:#FFB38A;font-weight:600}
+
+/* keyboard */
+.kb{flex:none;height:336px;background:#D1D3D9;padding:11px 3px 0;display:none;position:relative}
+.kb.on{display:block}
+.kb .r{display:flex;justify-content:center;gap:6px;margin-bottom:13px}
+.kb .r.i{padding:0 19px}
+.kb .k{flex:1 1 0;max-width:36px;height:44px;border-radius:5px;background:#fff;display:grid;place-items:center;font-size:22px;box-shadow:0 1px 0 rgba(0,0,0,.3);cursor:pointer;user-select:none}
+.kb .k.d{background:#ACB0BA;font-size:16px;flex:0 0 44px;max-width:none}
+.kb .k.sp{flex:1;max-width:none;font-size:16px}
+.kb .k.go{background:#0A7BFF;color:#fff;flex:0 0 94px;max-width:none;font-size:16px}
+.kb .hb{position:absolute;left:134px;bottom:8px;width:134px;height:5px;border-radius:3px;background:#0E0F0C}
+
+/* jump panel */
+.panel{width:220px;color:#ddd;font-size:13px;align-self:flex-start;margin-top:60px}
+.panel h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#999;margin:0 0 8px;font-weight:600}
+.panel button{display:block;width:100%;text-align:left;padding:7px 10px;border-radius:8px;color:#ddd}
+.panel button:hover{background:#3a3a3a}
+.panel .g{margin-bottom:18px}
+.panel label{display:flex;gap:8px;padding:7px 10px;cursor:pointer}
+@media (max-width:760px){.panel{display:none}}
+</style>
+</head>
+<body>
+
+<div class="phone" id="phone">
+  <div class="home"><img src="assets/home.png" alt=""><button class="hotspot" id="openBtn" aria-label="My Cards"></button></div>
+  <div class="scrim" id="scrim"></div>
+  <button class="close" id="closeBtn" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0E0F0C" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div class="sheet" id="sheet"><div class="handle"></div><div id="view" style="display:flex;flex-direction:column;flex:1;min-height:0"></div><div class="toast" id="toast"></div></div>
+</div>
+
+<div class="panel">
+  <div class="g"><h3>Jump to</h3>
+    <button data-j="my">My cards</button>
+    <button data-j="add">Add a card</button>
+    <button data-j="banks">Select a bank</button>
+    <button data-j="hdfc">HDFC Bank</button>
+    <button data-j="search">Search results</button>
+    <button data-j="nomatch">No results</button>
+    <button data-j="request">Request a card</button>
+    <button data-j="empty">No cards yet</button>
+  </div>
+  <div class="g"><h3>Simulate</h3>
+    <label><input type="checkbox" id="offline"> Couldn't load cards</label>
+    <label><input type="checkbox" id="failAdd"> Couldn't add (Retry)</label>
+  </div>
+  <div class="g"><h3>Tip</h3><div style="padding:0 10px;line-height:1.5;color:#aaa">Tap My Cards on the home screen. Drag a saved card left to remove.</div></div>
+</div>
+
+<script>
+/* ---------- data ---------- */
+const BANKS=[
+ {id:'au',name:'AU Small Finance Bank'},
+ {id:'axis',name:'Axis Bank',logo:'axis.png',short:'Axis Bank'},
+ {id:'bob',name:'Bank of Baroda',logo:'bank-of-baroda.png',short:'Bank of Baroda'},
+ {id:'hdfc',name:'HDFC Bank',logo:'hdfc.png',short:'HDFC Bank'},
+ {id:'hsbc',name:'HSBC'},
+ {id:'icici',name:'ICICI Bank',logo:'icici-amazon-pay.png',short:'ICICI Bank'},
+ {id:'indusind',name:'IndusInd Bank',logo:'indusind.png',short:'IndusInd Bank'},
+ {id:'kotak',name:'Kotak Mahindra Bank'},
+ {id:'rbl',name:'RBL Bank'},
+ {id:'sbi',name:'SBI Card',logo:'sbi-card.png',short:'SBI Card'},
+ {id:'slice',name:'slice'},
+ {id:'yes',name:'Yes Bank',logo:'yes-bank.png',short:'Yes Bank'}
+];
+const bank=id=>BANKS.find(b=>b.id===id);
+const CARDS=[
+ ['amazon-pay','Amazon Pay','icici','icici-amazon-pay'],
+ ['millennia','Millennia','hdfc','hdfc-millennia'],
+ ['flipkart','Flipkart','axis','axis-flipkart'],
+ ['cashback','Cashback','sbi','sbi-cashback'],
+ ['swiggy','Swiggy','hdfc','hdfc-swiggy'],
+ ['tata-neu','Tata Neu Infinity','hdfc','hdfc-tata-neu-infinity'],
+ ['regalia','Regalia Gold','hdfc','hdfc-regalia-gold'],
+ ['infinia','Infinia','hdfc','hdfc-infinia'],
+ ['emeralde','Emeralde Private Metal','icici','icici-emeralde-private-metal'],
+ ['ace','ACE','axis','axis-ace'],['atlas','Atlas','axis','axis-atlas'],['airtel','Airtel','axis','axis-airtel'],['supermoney','Super.money','axis','axis-supermoney'],
+ ['simplyclick','SimplyCLICK','sbi','sbi-simplyclick'],['phonepe','PhonePe Select Black','sbi','sbi-phonepe-select-black'],
+ ['live-plus','Live+','hsbc','hsbc-live-plus'],['premier','Premier','hsbc','hsbc-premier'],
+ ['tiger','Tiger','indusind','indusind-tiger'],['kotak811','811','kotak','kotak-811'],['shoprite','ShopRite','rbl','rbl-shoprite'],
+ ['altura','Altura','au','au-altura'],['ixigo','ixigo','au','au-ixigo'],['zenith','Zenith','au','au-zenith'],
+ ['slice','slice card','slice','slice']
+].map(([id,name,b,img])=>({id,name,bank:b,img}));
+const card=id=>CARDS.find(c=>c.id===id);
+const HDFC5=['millennia','swiggy','tata-neu','regalia','infinia'];
+const POPULAR=['amazon-pay','millennia','flipkart','cashback','swiggy','tata-neu'];
+const GRID=['hdfc','icici','sbi','axis','indusind','yes','bob'];
+
+/* ---------- state ---------- */
+const S={saved:['amazon-pay','flipkart'],screen:'my',stack:[],bankId:null,q:'',reqBank:'',reqName:'',menu:null,toast:null,kb:false,failed:{},from:'my'};
+let toastTimer=null;
+
+/* ---------- icons ---------- */
+const I={
+ back:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E0F0C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+ chev:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7b7a75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>',
+ search:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5b5a56" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+ x:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0E0F0C" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+ xs:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+ tick:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2E5CC8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>',
+ dots:'<svg width="16" height="16" viewBox="0 0 24 24" fill="#0E0F0C"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+ trash:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C8102E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>',
+ card:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2E5CC8" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18M6.5 15h4"/></svg>',
+ wifi:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2E5CC8" stroke-width="1.8" stroke-linecap="round"><path d="M2 9a15 15 0 0 1 20 0M5.5 12.5a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19.5" r=".8" fill="#2E5CC8"/></svg>',
+ bank:'<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#2E5CC8" stroke-width="1.7" stroke-linejoin="round"><path d="M3 9l9-5 9 5H3zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg>'
+};
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const view=$('#view'),sheet=$('#sheet'),toastEl=$('#toast');
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const bname=c=>bank(c.bank).short||bank(c.bank).name;
+const has=id=>S.saved.includes(id);
+
+function artRow(c,right){
+  return `<div class="row"><img class="art" src="assets/cards/${c.img}.png" alt=""><div class="tx"><div class="nm">${esc(c.name)}</div><div class="bk">${esc(bname(c))}</div></div>${right}</div>`;
+}
+function addCtl(c){
+  return has(c.id)
+   ? `<div class="added"><span class="ok">${I.tick}Added</span><button class="x" data-act="rm" data-id="${c.id}" aria-label="Remove ${esc(c.name)}">${I.x}</button></div>`
+   : `<button class="btn-add" data-act="add" data-id="${c.id}">Add</button>`;
+}
+function bankLogo(b,cls=''){
+  return b.logo?`<div class="blg ${cls}"><img src="assets/banks/${b.logo}" alt=""></div>`:`<div class="blg l">${esc(b.id==='au'?'AU':b.name[0])}</div>`;
+}
+function header(title,back){
+  return `<div class="hd">${back?`<button class="back" data-act="back" aria-label="Back">${I.back}</button>`:''}<h1>${title}</h1></div>`;
+}
+function searchBox(ph,val){
+  return `<div class="search ${val?'has':''}">${I.search}<input id="q" placeholder="${ph}" value="${esc(val||'')}" autocomplete="off"><button class="clr" data-act="clr" aria-label="Clear">${I.xs}</button></div>`;
+}
+const searchHit=(c,q)=>{q=q.toLowerCase();return c.name.toLowerCase().includes(q)||(bank(c.bank).name.toLowerCase().includes(q))};
+
+/* ---------- screens ---------- */
+function vMy(){
+  if(!S.saved.length){
+    return `${header('My cards')}<div class="body"><div class="center empty"><div class="hero"><img class="bd" src="assets/hero-backdrop.svg" alt="">
+      <div class="c" style="left:20.3px;top:52.3px;width:136px;height:85px;transform:rotate(-14deg)"><img src="assets/cards/hdfc-millennia.png" alt=""></div>
+      <div class="c" style="left:107.6px;top:63.8px;width:136px;height:72.1px;border-radius:6px;transform:rotate(12deg)"><img src="assets/cards/axis-flipkart.png" alt="" style="position:absolute;left:0;top:-9.55%;height:118.8%"></div>
+      <div class="c" style="left:62px;top:92px;width:136px;height:85px"><img src="assets/cards/icici-amazon-pay.png" alt=""></div></div>
+      <h2>No cards yet</h2><p>Add them to see prices after card offers.</p></div></div>
+      <div class="foot"><button class="cta" data-act="goAdd">Add a card</button></div>`;
+  }
+  const rows=S.saved.map(id=>{const c=card(id);return `<div class="swipe" data-id="${id}"><div class="rm" data-act="rm" data-id="${id}">${I.trash}Remove</div><div class="in"><img class="art" src="assets/cards/${c.img}.png" alt=""><div class="tx" style="flex:1"><div class="nm" style="font-weight:600;font-size:14px;line-height:20px">${esc(c.name)}</div><div class="bk" style="font-size:12px;line-height:16px;color:var(--muted)">${esc(bname(c))}</div></div><button class="more ${S.menu===id?'on':''}" data-act="menu" data-id="${id}" aria-label="Options">${I.dots}</button></div></div>`}).join('');
+  return `${header('My cards')}<div class="body" id="mybody"><div class="sec" style="margin:20px 0 13px;font-size:14px;line-height:20px;font-weight:600">${S.saved.length} card${S.saved.length>1?'s':''}</div><div class="card" id="mylist" style="position:relative">${rows}${S.menu?popover():''}</div></div>
+    <div class="foot"><button class="cta" data-act="goAdd">Add cards</button></div>`;
+}
+function popover(){
+  const i=S.saved.indexOf(S.menu);
+  return `<button class="pop" data-act="rm" data-id="${S.menu}" style="top:${i*59+53}px">${I.trash}Remove card</button>`;
+}
+function vAdd(){
+  if($('#offline').checked) return `${header('Add a card',true)}<div class="body"><div class="center mid"><img class="ico" src="assets/icon-wifi-off.svg" alt=""><h2>Couldn't load cards</h2><p>Check your connection and try again.</p><button class="pill" data-act="retry">Try again</button></div></div>`;
+  const q=S.q.trim();
+  let main;
+  if(q){
+    const hits=CARDS.filter(c=>searchHit(c,q));
+    if(hits.length) main=`<div class="meta">${hits.length} result${hits.length>1?'s':''}</div><div class="card">${hits.map(c=>artRow(c,addCtl(c))).join('')}</div>`;
+    else main=`<div class="center"><img class="ico" src="assets/icon-card.svg" alt=""><h2>No match for “${esc(q)}”</h2><p>We may not have this card yet.</p><button class="pill" data-act="request">Request a card</button></div>`;
+  }else{
+    main=`<div class="sec">Pick your bank</div><div class="grid">${GRID.map(id=>{const b=bank(id);return `<button class="tile" data-act="bank" data-id="${id}"><div class="lg"><img src="assets/banks/${b.logo}" alt=""></div><span>${esc(b.short)}</span></button>`}).join('').replace(/(<button class="tile" data-act="bank" data-id="bob">[\s\S]*?<\/button>)/,'$1')}
+      <button class="tile" data-act="banks"><div class="lg"><img src="assets/all-banks.svg" alt="" style="width:40px;height:40px"></div><span>View more</span></button></div>
+      <div class="sec">Popular cards</div><div class="card">${POPULAR.map(id=>artRow(card(id),addCtl(card(id)))).join('')}</div>`;
+  }
+  return `${header('Add a card',true)}<div class="body">${searchBox('Search card or bank',S.q)}${main}</div>`;
+}
+function vBanks(){
+  const q=S.q.trim().toLowerCase();
+  const list=BANKS.filter(b=>!q||b.name.toLowerCase().includes(q));
+  return `${header('Select a bank',true)}<div class="body">${searchBox('Search bank',S.q)}${list.length?`<div class="card" style="margin-top:21px">${list.map(b=>`<button class="brow" data-act="bank" data-id="${b.id}">${bankLogo(b)}<b>${esc(b.name)}</b>${I.chev}</button>`).join('')}</div>`:noMatch(S.q.trim(),'bank')}</div>`;
+}
+function vBank(){
+  const b=bank(S.bankId);
+  let cs=CARDS.filter(c=>c.bank===b.id);
+  if(b.id==='hdfc')cs=HDFC5.map(card);
+  const q=S.q.trim().toLowerCase();
+  if(q)cs=cs.filter(c=>c.name.toLowerCase().includes(q));
+  const title=b.logo?`<img src="assets/banks/${b.logo}" alt="">${esc(b.short||b.name)}`:esc(b.name);
+  const body=cs.length?`<div class="card tight" style="margin-top:21px">${cs.map(c=>artRow(c,addCtl(c))).join('')}</div>`:`${noMatch(S.q.trim(),'card')}`;
+  return `${header(title,true)}<div class="body">${searchBox('Search '+(b.id==='hdfc'?'HDFC':esc(b.short||b.name))+' cards',S.q)}${body}${cs.length?'<button class="link" data-act="request">Request a card</button>':''}</div><div class="foot"><button class="cta" data-act="done">Done</button></div>`;
+}
+function vRequest(){
+  return `${header('Request a card',true)}<div class="body"><div class="sub">We’ll add it and let you know.</div>
+   <div class="fld"><label>Bank</label><div class="in"><input id="rb" value="${esc(S.reqBank)}" placeholder="Bank"></div></div>
+   <div class="fld"><label>Card name</label><div class="in"><input id="rn" value="${esc(S.reqName)}" placeholder="Card name"></div></div>
+   <button class="cta" id="send" data-act="send" style="margin-top:18px" ${S.reqBank&&S.reqName?'':'disabled'}>Send request</button></div>`;
+}
+
+function noMatch(q,what){
+  return `<div class="center"><img class="ico" src="assets/icon-card.svg" alt=""><h2>${q?`No match for “${esc(q)}”`:'No cards yet'}</h2><p>We may not have this ${what} yet.</p><button class="pill" data-act="request">Request a card</button></div>`;
+}
+const SCREENS={my:vMy,add:vAdd,banks:vBanks,bank:vBank,request:vRequest};
+
+/* ---------- render ---------- */
+function render(focusId){
+  view.innerHTML=SCREENS[S.screen]();
+  const hasFoot=!!view.querySelector('.foot');
+  view.insertAdjacentHTML('beforeend',`<div class="kb ${S.kb?'on':''}" id="kb">${kbHTML()}</div>`);
+  S.hasFoot=hasFoot;
+  placeToast();
+  if(focusId){const el=document.getElementById(focusId);if(el){el.focus();const n=el.value.length;try{el.setSelectionRange(n,n)}catch(e){}}}
+  bindInputs();
+}
+function bindInputs(){
+  const q=$('#q');
+  if(q){
+    q.addEventListener('input',()=>{S.q=q.value;render('q')});
+    q.addEventListener('focus',()=>{S.kb=true;q.closest('.search').classList.add('focus');$('#kb').classList.add('on')});
+    q.addEventListener('blur',()=>{q.closest('.search')?.classList.remove('focus')});
+    q.addEventListener('keydown',e=>{if(e.key==='Enter')q.blur(),hideKb()});
+  }
+  [['rb','reqBank'],['rn','reqName']].forEach(([id,k])=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.addEventListener('input',()=>{S[k]=el.value;const b=$('#send');if(b)b.disabled=!(S.reqBank&&S.reqName)});
+    el.addEventListener('focus',()=>{S.kb=true;el.parentElement.classList.add('focus');$('#kb').classList.add('on')});
+    el.addEventListener('blur',()=>el.parentElement?.classList.remove('focus'));
+    el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur(),hideKb()});
+  });
+}
+function hideKb(){S.kb=false;const k=$('#kb');if(k)k.classList.remove('on')}
+function kbHTML(){
+  const key=k=>`<div class="k" data-k="${k}">${k}</div>`;
+  const row=(t,c='')=>`<div class="r ${c}">${[...t].map(key).join('')}</div>`;
+  return row('qwertyuiop')+row('asdfghjkl','i')+`<div class="r"><div class="k d" data-k="">⇧</div><div style="flex:0 0 10px"></div>${[...'zxcvbnm'].map(key).join('')}<div style="flex:0 0 10px"></div><div class="k d" data-k="⌫">⌫</div></div><div class="r"><div class="k d" data-k="">123</div><div class="k d" data-k="">☺</div><div class="k sp" data-k=" ">space</div><div class="k go" data-k="⏎">search</div></div><div class="hb"></div>`;
+}
+function placeToast(){
+  toastEl.style.bottom=(S.hasFoot?110:34)+'px';
+  toastEl.style.display=S.kb?'none':'';
+}
+
+/* toast */
+function toast(text,action,fn){
+  clearTimeout(toastTimer);
+  toastEl.innerHTML=`<span>${esc(text)}</span>${action?`<button id="ta">${action}</button>`:''}`;
+  toastEl.classList.add('on');
+  const b=$('#ta');if(b)b.onclick=()=>{toastEl.classList.remove('on');fn&&fn()};
+  toastTimer=setTimeout(()=>toastEl.classList.remove('on'),4000);
+}
+
+/* ---------- navigation ---------- */
+function go(screen,opts={}){
+  if(opts.push!==false&&screen!==S.screen)S.stack.push(S.screen);
+  S.screen=screen;S.menu=null;hideKb();
+  if(!opts.keepQ)S.q='';
+  render();
+}
+function back(){
+  S.kb=false;
+  const p=S.stack.pop();
+  if(!p){closeSheet();return}
+  S.screen=p;S.menu=null;S.q='';render();
+}
+function openSheet(startScreen){
+  S.stack=[];S.screen=startScreen;S.q='';S.menu=null;S.kb=false;
+  render();
+  $('#scrim').classList.add('on');sheet.classList.add('on');$('#closeBtn').classList.add('on');
+}
+function closeSheet(){
+  S.kb=false;toastEl.classList.remove('on');
+  sheet.classList.remove('on');$('#scrim').classList.remove('on');$('#closeBtn').classList.remove('on');
+}
+
+/* ---------- actions ---------- */
+function addCard(id){
+  const c=card(id);
+  if($('#failAdd').checked&&!S.failed[id]){
+    S.failed[id]=1;
+    toast(`Couldn’t add ${c.name}`,'Retry',()=>addCard(id));return;
+  }
+  S.saved.push(id);render();
+  toast(`${c.name} added`,'Undo',()=>{S.saved=S.saved.filter(x=>x!==id);render()});
+}
+function removeCard(id){
+  const c=card(id),idx=S.saved.indexOf(id);
+  S.saved=S.saved.filter(x=>x!==id);S.menu=null;render();
+  toast(`${c.name} removed`,'Undo',()=>{S.saved.splice(Math.min(idx,S.saved.length),0,id);render()});
+}
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-act]');
+  if(e.target.closest('.kb'))return;
+  if(!t){ if(S.menu){S.menu=null;render()} return }
+  const id=t.dataset.id,a=t.dataset.act;
+  if(a==='add')addCard(id);
+  else if(a==='rm')removeCard(id);
+  else if(a==='back')back();
+  else if(a==='menu'){S.menu=S.menu===id?null:id;render();e.stopPropagation()}
+  else if(a==='goAdd')go('add');
+  else if(a==='banks')go('banks');
+  else if(a==='bank'){S.bankId=id;go('bank')}
+  else if(a==='done'){S.stack=[];S.screen='my';S.q='';render()}
+  else if(a==='clr'){S.q='';render('q')}
+  else if(a==='retry'){$('#offline').checked=false;render()}
+  else if(a==='request'){
+    S.reqName='';
+    S.reqBank=S.screen==='bank'?(bank(S.bankId).short||bank(S.bankId).name):S.q.trim();
+    go('request',{keepQ:true});
+    setTimeout(()=>document.getElementById(S.reqBank?'rn':'rb')?.focus(),30);
+  }
+  else if(a==='send'){
+    const q=S.q;
+    const p=S.stack.pop()||'add';
+    S.screen=p;S.menu=null;hideKb();render();
+    toast('Request sent');
+  }
+});
+$('#openBtn').onclick=()=>openSheet(S.saved.length?'my':'add');
+$('#closeBtn').onclick=closeSheet;
+$('#scrim').onclick=closeSheet;
+
+/* on-screen keyboard */
+document.addEventListener('mousedown',e=>{
+  const k=e.target.closest('.k');if(!k)return;
+  e.preventDefault();
+  const el=document.activeElement;if(!el||el.tagName!=='INPUT')return;
+  const key=k.dataset.k;
+  if(key==='⏎'){el.blur();hideKb();return}
+  if(key==='⌫')el.value=el.value.slice(0,-1);
+  else if(key)el.value+=key;
+  el.dispatchEvent(new Event('input',{bubbles:true}));
+});
+document.addEventListener('mousedown',e=>{
+  if(S.kb&&!e.target.closest('.kb,.search,.fld input,.fld .in')){document.activeElement?.blur();hideKb();}
+});
+
+/* swipe left to remove */
+(()=>{
+  let sx=0,row=null,dx=0,moved=false;
+  document.addEventListener('pointerdown',e=>{
+    const r=e.target.closest('.swipe .in');if(!r||e.target.closest('.more'))return;
+    row=r;sx=e.clientX;dx=0;moved=false;r.style.transition='none';
+  });
+  document.addEventListener('pointermove',e=>{
+    if(!row)return;dx=Math.min(0,Math.max(-72,e.clientX-sx));
+    if(Math.abs(e.clientX-sx)>4)moved=true;
+    row.style.transform=`translateX(${dx}px)`;
+  });
+  const end=()=>{if(!row)return;row.style.transition='';row.style.transform=dx<-36?'translateX(-72px)':'';row=null};
+  document.addEventListener('pointerup',end);document.addEventListener('pointercancel',end);
+})();
+
+/* jump panel */
+document.querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>{
+  const j=b.dataset.j;
+  if(!sheet.classList.contains('on'))openSheet('my');
+  S.stack=[];S.menu=null;S.q='';
+  if(j==='my'){S.screen='my'}
+  if(j==='add'){S.stack=['my'];S.screen='add'}
+  if(j==='banks'){S.stack=['my','add'];S.screen='banks'}
+  if(j==='hdfc'){S.stack=['my','add'];S.bankId='hdfc';S.screen='bank'}
+  if(j==='search'){S.stack=['my'];S.screen='add';S.q='hdfc'}
+  if(j==='nomatch'){S.stack=['my'];S.screen='add';S.q='idfc'}
+  if(j==='request'){S.stack=['my','add'];S.q='idfc';S.reqBank='IDFC FIRST Bank';S.reqName='';S.screen='request'}
+  if(j==='empty'){S.saved=[];S.screen='my'}
+  if(j!=='empty'&&!S.saved.length)S.saved=['amazon-pay','flipkart'];
+  hideKb();render();
+});
+$('#offline').onchange=()=>{if(S.screen==='add')render()};
+</script>
+</body>
+</html>

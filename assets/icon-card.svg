@@ -1,0 +1,19 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icon/card">
+<path id="Vector" d="M46.083 9.33203H16.9163C14.6612 9.33203 12.833 11.1602 12.833 13.4154V29.7487C12.833 32.0039 14.6612 33.832 16.9163 33.832H46.083C48.3382 33.832 50.1663 32.0039 50.1663 29.7487V13.4154C50.1663 11.1602 48.3382 9.33203 46.083 9.33203Z" fill="#B9D0F8"/>
+<path id="Vector_2" d="M39.083 18.668H9.91634C7.66118 18.668 5.83301 20.4961 5.83301 22.7513V40.2513C5.83301 42.5065 7.66118 44.3346 9.91634 44.3346H39.083C41.3382 44.3346 43.1663 42.5065 43.1663 40.2513V22.7513C43.1663 20.4961 41.3382 18.668 39.083 18.668Z" fill="url(#paint0_linear_0_4)"/>
+<path id="Vector_3" opacity="0.55" d="M43.1663 24.5H5.83301V29.75H43.1663V24.5Z" fill="#152F73"/>
+<path id="Vector_4" d="M18.3163 34.418H12.5997C11.762 34.418 11.083 35.097 11.083 35.9346V39.318C11.083 40.1556 11.762 40.8346 12.5997 40.8346H18.3163C19.154 40.8346 19.833 40.1556 19.833 39.318V35.9346C19.833 35.097 19.154 34.418 18.3163 34.418Z" fill="url(#paint1_linear_0_4)"/>
+<path id="Vector_5" opacity="0.75" d="M35.8167 36.168H26.0167C25.179 36.168 24.5 36.847 24.5 37.6846C24.5 38.5223 25.179 39.2013 26.0167 39.2013H35.8167C36.6543 39.2013 37.3333 38.5223 37.3333 37.6846C37.3333 36.847 36.6543 36.168 35.8167 36.168Z" fill="white"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_4" x1="5.83301" y1="18.668" x2="5.83301" y2="44.3346" gradientUnits="userSpaceOnUse">
+<stop stop-color="#7AA5F4"/>
+<stop offset="1" stop-color="#2E5CC8"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_4" x1="11.083" y1="34.418" x2="11.083" y2="40.8346" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFD66E"/>
+<stop offset="1" stop-color="#EE9B1E"/>
+</linearGradient>
+</defs>
+</svg>
