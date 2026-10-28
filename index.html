@@ -286,7 +286,8 @@ function vAdd(){
       <button class="tile" data-act="banks"><div class="lg"><img src="assets/all-banks.svg" alt="" style="width:40px;height:40px"></div><span>View more</span></button></div>
       <div class="sec">Popular cards</div><div class="card">${POPULAR.map(id=>artRow(card(id),addCtl(card(id)))).join('')}</div>`;
   }
-  return `${header('Add a card',true)}<div class="body">${searchBox('Search card or bank',S.q)}${main}</div>`;
+  const foot=S.kb?'':`<div class="foot"><button class="cta" data-act="done">Done</button></div>`;
+  return `${header('Add a card',true)}<div class="body">${searchBox('Search card or bank',S.q)}${main}</div>${foot}`;
 }
 function vBanks(){
   const q=S.q.trim().toLowerCase();
